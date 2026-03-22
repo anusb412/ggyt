@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PK Smoke Shop • Mesa, AZ • Now Open</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Syncopate:wght@700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --violet: #7c3aed;
+            --violet2: #a855f7;
+            --pink: #ec4899;
+            --cyan: #22d3ee;
+            --glow-v: rgba(168,85,247,0.6);
+            --glow-p: rgba(236,72,153,0.4);
+        }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: #080810;
+            color: #f0f0f8;
+            overflow-x: hidden;
+            cursor: none;
+        }
+
+        /* ── CUSTOM CURSOR ── */
+        #cursor {
+            width: 12px; height: 12px;
+            background: var(--violet2);
+            border-radius: 50%;
+            position: fixed; top: 0; left: 0;
+            transform: translate(-50%,-50%);
+            pointer-events: none; z-index: 99999;
+            transition: transform 0.1s, background 0.3s;
+            mix-blend-mode: screen;
+        }
+        #cursorTrail {
+            width: 36px; height: 36px;
+            border: 1.5px solid var(--violet2);
+            border-radius: 50%;
+            position: fixed; top: 0; left: 0;
+            transform: translate(-50%,-50%);
+            pointer-events: none; z-index: 99998;
+            transition: all 0.15s ease;
+            opacity: 0.5;
+        }
+        a, button { cursor: none; }
+
+        /* ── AGE GATE ── */
+        #ageGate {
+            position: fixed; inset: 0; z-index: 9999;
+            display: flex; align-items: center; justify-content: center;
+        }
+        #ageBg {
+            position: absolute; inset: 0;
+            background: #06060e;
+        }
+        .age-box {
+            position: relative; z-index: 1;
+            max-width: 440px; width: 90%;
+            background: rgba(15,12,30,0.95);
+            border: 1px solid rgba(168,85,247,0.3);
+            border-radius: 20px; padding: 48px;
+            text-align: center;
+            box-shadow: 0 0 60px rgba(168,85,247,0.15), 0 0 120px rgba(168,85,247,0.05);
+        }
+        .age-icon-ring {
+            width: 80px; height: 80px;
+            border: 2px solid rgba(168,85,247,0.4);
+            border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; margin: 0 auto 24px;
+            position: relative;
+        }
+        .age-icon-ring::before {
+            content: ''; position: absolute; inset: -6px;
+            border: 1px solid rgba(168,85,247,0.15);
+            border-radius: 50%;
+        }
+        .age-title { font-family: 'Orbitron', monospace; font-size: 2rem; font-weight: 900; letter-spacing: 3px; margin-bottom: 12px; }
+        .age-sub { color: rgba(255,255,255,0.5); font-size: 1rem; margin-bottom: 32px; line-height: 1.5; }
+        .age-btn-yes {
+            display: block; width: 100%; padding: 16px;
+            background: linear-gradient(135deg, var(--violet), var(--violet2));
+            border: none; border-radius: 12px; color: #fff;
+            font-family: 'Orbitron', monospace; font-size: 0.9rem; font-weight: 700;
+            letter-spacing: 2px; margin-bottom: 12px; cursor: none;
+            box-shadow: 0 0 20px rgba(168,85,247,0.4);
+            transition: box-shadow 0.3s, transform 0.2s;
+        }
+        .age-btn-yes:hover { box-shadow: 0 0 40px rgba(168,85,247,0.7); transform: translateY(-2px); }
+        .age-btn-no {
+            display: block; width: 100%; padding: 14px;
+            background: transparent; border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px; color: rgba(255,255,255,0.4);
+            font-family: 'Rajdhani', sans-serif; font-size: 1rem; cursor: none;
+        }
+        .age-fine { font-size: 10px; color: rgba(255,255,255,0.2); margin-top: 20px; }
+
+        /* ── NAV ── */
+        #nav {
+            position: fixed; top: 0; left: 0; right: 0;
+            z-index: 200; padding: 0 32px;
+            display: flex; align-items: center; justify-content: space-between;
+            height: 68px;
+            transition: background 0.4s, border-color 0.4s;
+        }
+        #nav.scrolled {
+            background: rgba(8,8,16,0.92);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(168,85,247,0.15);
+        }
+        .nav-logo {
+            font-family: 'Syncopate', sans-serif;
+            font-size: 1.3rem; font-weight: 700; letter-spacing: 3px;
+        }
+        .nav-logo .accent { color: var(--violet2); }
+        .nav-links { display: flex; gap: 36px; }
+        .nav-links a {
+            font-size: 0.75rem; font-weight: 700; letter-spacing: 2px;
+            color: rgba(255,255,255,0.5); text-decoration: none;
+            text-transform: uppercase; transition: color 0.3s;
+            position: relative;
+        }
+        .nav-links a::after {
+            content: ''; position: absolute; bottom: -4px; left: 0; right: 0;
+            height: 1px; background: var(--violet2);
+            transform: scaleX(0); transition: transform 0.3s;
+        }
+        .nav-links a:hover { color: #fff; }
+        .nav-links a:hover::after { transform: scaleX(1); }
+        .nav-right { display: flex; gap: 20px; align-items: center; }
+        .nav-cart {
+            position: relative; padding: 8px;
+            background: rgba(168,85,247,0.1);
+            border: 1px solid rgba(168,85,247,0.2);
+            border-radius: 10px;
+            transition: background 0.3s, border-color 0.3s;
+        }
+        .nav-cart:hover { background: rgba(168,85,247,0.2); border-color: rgba(168,85,247,0.5); }
+        .cart-count {
+            position: absolute; top: -6px; right: -6px;
+            background: var(--violet2); width: 18px; height: 18px;
+            border-radius: 50%; font-size: 9px; font-weight: 900;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .menu-btn { display: none; background: none; border: none; color: #fff; font-size: 1.2rem; }
+        @media(max-width:768px) { .nav-links { display: none; } .menu-btn { display: block; } }
+
+        /* ── HERO CANVAS ── */
+        #heroCanvas {
+            position: absolute; inset: 0;
+            pointer-events: none; z-index: 1;
+        }
+
+        /* ── GEOMETRIC SHAPES ── */
+        .geo-shape {
+            position: absolute; pointer-events: none; z-index: 2;
+        }
+        .hex { opacity: 0.06; animation: floatGeo 20s infinite ease-in-out; }
+        .ring { opacity: 0.08; animation: spinRing 25s infinite linear; }
+        @keyframes floatGeo {
+            0%,100% { transform: translateY(0) rotate(0deg); }
+            33% { transform: translateY(-30px) rotate(15deg); }
+            66% { transform: translateY(15px) rotate(-10deg); }
+        }
+        @keyframes spinRing {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.05); }
+            100% { transform: rotate(360deg) scale(1); }
+        }
+        .dot-grid {
+            position: absolute; z-index: 1; pointer-events: none; opacity: 0.15;
+            background-image: radial-gradient(circle, rgba(168,85,247,0.5) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        /* ── HERO SECTION ── */
+        #hero {
+            position: relative; min-height: 100vh;
+            display: flex; align-items: center;
+            background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(124,58,237,0.12) 0%, transparent 70%), #080810;
+            overflow: hidden;
+        }
+        .hero-content { position: relative; z-index: 10; max-width: 1200px; margin: 0 auto; padding: 120px 32px 80px; }
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: 10px;
+            border: 1px solid rgba(168,85,247,0.3);
+            background: rgba(168,85,247,0.06);
+            padding: 6px 18px; border-radius: 999px;
+            font-size: 0.7rem; font-weight: 700; letter-spacing: 3px;
+            color: var(--violet2); margin-bottom: 28px;
+        }
+        .status-dot { width: 6px; height: 6px; background: #4ade80; border-radius: 50%; animation: blink 1.5s infinite; }
+        @keyframes blink { 0%,100%{opacity:1;}50%{opacity:0.3;} }
+
+        .hero-title {
+            font-family: 'Syncopate', sans-serif;
+            font-size: clamp(3.5rem, 10vw, 9rem);
+            font-weight: 700; line-height: 0.9; letter-spacing: 2px;
+            margin-bottom: 32px;
+        }
+        .hero-title .line2 { color: transparent; -webkit-text-stroke: 1px rgba(168,85,247,0.6); }
+        .hero-title .line3 {
+            color: transparent;
+            background: linear-gradient(135deg, var(--violet2), var(--pink));
+            -webkit-background-clip: text; background-clip: text;
+            filter: drop-shadow(0 0 30px rgba(168,85,247,0.5));
+        }
+        .hero-sub { color: rgba(255,255,255,0.55); font-size: 1.1rem; max-width: 520px; line-height: 1.7; margin-bottom: 40px; letter-spacing: 0.5px; }
+        .hero-sub strong { color: rgba(255,255,255,0.85); }
+
+        .hero-ctas { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 56px; }
+        .btn-glow {
+            display: inline-flex; align-items: center; gap: 12px;
+            background: linear-gradient(135deg, var(--violet), var(--violet2));
+            padding: 16px 36px; border-radius: 999px; border: none;
+            font-family: 'Orbitron', monospace; font-size: 0.75rem;
+            font-weight: 700; letter-spacing: 2px; color: #fff;
+            box-shadow: 0 0 30px rgba(168,85,247,0.4);
+            transition: all 0.3s; cursor: none;
+        }
+        .btn-glow:hover { box-shadow: 0 0 60px rgba(168,85,247,0.7); transform: translateY(-3px); }
+        .btn-outline {
+            display: inline-flex; align-items: center; gap: 10px;
+            padding: 15px 32px; border-radius: 999px;
+            border: 1px solid rgba(168,85,247,0.35);
+            color: rgba(255,255,255,0.75);
+            font-family: 'Rajdhani', sans-serif; font-size: 0.85rem;
+            font-weight: 700; letter-spacing: 1.5px;
+            transition: all 0.3s; background: transparent; cursor: none;
+        }
+        .btn-outline:hover { border-color: var(--violet2); color: #fff; background: rgba(168,85,247,0.08); }
+
+        .hero-stats { display: flex; gap: 40px; flex-wrap: wrap; }
+        .stat { border-left: 1px solid rgba(168,85,247,0.3); padding-left: 20px; }
+        .stat-val { font-family: 'Orbitron', monospace; font-size: 1.8rem; font-weight: 900; color: var(--violet2); }
+        .stat-lbl { font-size: 0.65rem; font-weight: 700; letter-spacing: 2px; color: rgba(255,255,255,0.35); text-transform: uppercase; margin-top: 2px; }
+
+        /* ── TRUST BAR ── */
+        .trust-bar {
+            background: rgba(255,255,255,0.02);
+            border-top: 1px solid rgba(168,85,247,0.1);
+            border-bottom: 1px solid rgba(168,85,247,0.1);
+            padding: 16px 32px;
+            display: flex; justify-content: center; flex-wrap: wrap;
+            gap: 32px;
+        }
+        .trust-item { display: flex; align-items: center; gap: 8px; font-size: 0.7rem; font-weight: 700; letter-spacing: 2px; color: rgba(255,255,255,0.35); }
+        .trust-item i { color: var(--violet2); }
+
+        /* ── SECTIONS ── */
+        .section-wrap { max-width: 1200px; margin: 0 auto; padding: 0 32px; }
+        .sec-eyebrow {
+            font-size: 0.65rem; font-weight: 700; letter-spacing: 4px;
+            text-transform: uppercase; color: var(--violet2); margin-bottom: 10px;
+            display: flex; align-items: center; gap: 12px;
+        }
+        .sec-eyebrow::before { content: ''; width: 24px; height: 1px; background: var(--violet2); }
+        .sec-title {
+            font-family: 'Syncopate', sans-serif;
+            font-size: clamp(2rem, 5vw, 4rem);
+            font-weight: 700; letter-spacing: 1px; line-height: 1.05;
+        }
+
+        /* ── PRODUCT GRID ── */
+        #shopSection { padding: 100px 0; }
+        .prod-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 16px; }
+        .pcard {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(168,85,247,0.12);
+            border-radius: 16px; overflow: hidden;
+            transition: all 0.4s cubic-bezier(.4,0,.2,1); cursor: none;
+            position: relative;
+        }
+        .pcard::before {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(135deg, rgba(168,85,247,0.08), transparent);
+            opacity: 0; transition: opacity 0.4s;
+        }
+        .pcard:hover { transform: translateY(-12px); border-color: rgba(168,85,247,0.4); }
+        .pcard:hover::before { opacity: 1; }
+        .pcard:hover { box-shadow: 0 20px 60px -10px rgba(168,85,247,0.3), 0 0 0 1px rgba(168,85,247,0.2); }
+        .pcard-img { width: 100%; height: 200px; object-fit: cover; display: block; }
+        .pcard-body { padding: 18px; }
+        .pcard-cat { font-size: 0.6rem; font-weight: 700; letter-spacing: 3px; color: var(--violet2); margin-bottom: 6px; text-transform: uppercase; }
+        .pcard-name { font-family: 'Syncopate', sans-serif; font-size: 0.75rem; font-weight: 700; margin-bottom: 4px; line-height: 1.3; }
+        .pcard-sub { color: rgba(255,255,255,0.4); font-size: 0.82rem; margin-bottom: 14px; }
+        .pcard-foot { display: flex; justify-content: space-between; align-items: center; }
+        .pcard-price { font-family: 'Orbitron', monospace; font-size: 1.2rem; font-weight: 700; }
+        .pcard-add {
+            width: 36px; height: 36px; border-radius: 10px;
+            background: linear-gradient(135deg, var(--violet), var(--violet2));
+            border: none; color: #fff; font-size: 1.1rem;
+            display: flex; align-items: center; justify-content: center;
+            cursor: none; transition: box-shadow 0.3s;
+        }
+        .pcard-add:hover { box-shadow: 0 0 20px rgba(168,85,247,0.6); }
+
+        /* ── CATEGORY CARDS ── */
+        .cats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+        .cat-card {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(168,85,247,0.1);
+            border-radius: 16px; padding: 32px 24px;
+            transition: all 0.3s; position: relative; overflow: hidden;
+        }
+        .cat-card::after {
+            content: ''; position: absolute;
+            bottom: 0; right: 0; width: 120px; height: 120px;
+            background: radial-gradient(circle, rgba(168,85,247,0.08), transparent 70%);
+            transition: transform 0.4s;
+        }
+        .cat-card:hover { border-color: rgba(168,85,247,0.35); background: rgba(168,85,247,0.04); }
+        .cat-card:hover::after { transform: scale(2); }
+        .cat-icon { font-size: 2.5rem; margin-bottom: 16px; }
+        .cat-name { font-family: 'Syncopate', sans-serif; font-size: 0.8rem; font-weight: 700; margin-bottom: 8px; letter-spacing: 0.5px; line-height: 1.4; }
+        .cat-sub { color: rgba(255,255,255,0.4); font-size: 0.82rem; line-height: 1.5; }
+
+        /* ── DEALS ── */
+        #dealsSection {
+            background: radial-gradient(ellipse 100% 80% at 50% 100%, rgba(124,58,237,0.08) 0%, transparent 70%);
+            padding: 100px 0;
+        }
+        .deal-num {
+            font-family: 'Orbitron', monospace;
+            font-size: 5rem; font-weight: 900; line-height: 1;
+            color: transparent; -webkit-text-stroke: 1px rgba(168,85,247,0.2);
+        }
+        .deal-title { font-family: 'Syncopate', sans-serif; font-size: 1.1rem; font-weight: 700; margin-bottom: 4px; }
+        .deal-sub { color: rgba(255,255,255,0.45); font-size: 0.85rem; }
+
+        /* ── REVIEWS ── */
+        .review-track {
+            display: flex; gap: 20px; overflow-x: auto; padding: 4px 32px 20px;
+            scroll-snap-type: x mandatory; scrollbar-width: thin; scrollbar-color: var(--violet) transparent;
+        }
+        .review-card {
+            min-width: 300px; scroll-snap-align: start;
+            background: rgba(255,255,255,0.02); border: 1px solid rgba(168,85,247,0.12);
+            border-radius: 16px; padding: 28px; transition: border-color 0.3s;
+        }
+        .review-card:hover { border-color: rgba(168,85,247,0.3); }
+
+        /* ── CONTACT ── */
+        #contactSection { padding: 100px 0; }
+        .contact-grid { display: grid; grid-template-columns: 1fr 1.2fr; gap: 60px; align-items: start; }
+        @media(max-width:768px) { .contact-grid { grid-template-columns: 1fr; } }
+        .contact-info-item {
+            display: flex; align-items: flex-start; gap: 16px; margin-bottom: 28px;
+        }
+        .ci-icon {
+            width: 44px; height: 44px; flex-shrink: 0;
+            border: 1px solid rgba(168,85,247,0.3);
+            border-radius: 12px; display: flex; align-items: center;
+            justify-content: center; color: var(--violet2);
+            background: rgba(168,85,247,0.05);
+        }
+        .ci-lbl { font-size: 0.65rem; font-weight: 700; letter-spacing: 2px; color: rgba(255,255,255,0.3); text-transform: uppercase; margin-bottom: 4px; }
+        .ci-val { font-size: 0.95rem; color: rgba(255,255,255,0.8); line-height: 1.5; }
+        .form-box {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(168,85,247,0.15);
+            border-radius: 20px; padding: 36px;
+        }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+        .f-input {
+            width: 100%; background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 10px; padding: 14px 16px;
+            color: #fff; font-family: 'Rajdhani', sans-serif; font-size: 0.95rem;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            outline: none;
+        }
+        .f-input:focus { border-color: rgba(168,85,247,0.5); box-shadow: 0 0 0 3px rgba(168,85,247,0.07); }
+        .f-input::placeholder { color: rgba(255,255,255,0.25); }
+
+        /* ── CART ── */
+        #cartPanel {
+            position: fixed; right: 0; top: 0; bottom: 0;
+            width: 420px; max-width: 100vw;
+            background: #0c0c18; border-left: 1px solid rgba(168,85,247,0.2);
+            z-index: 600; display: flex; flex-direction: column;
+            transform: translateX(100%); transition: transform 0.45s cubic-bezier(.32,.72,0,1);
+        }
+        #cartPanel.open { transform: translateX(0); }
+        #cartOverlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+            z-index: 599; display: none;
+            backdrop-filter: blur(4px);
+        }
+        #cartOverlay.show { display: block; }
+
+        /* ── FOOTER ── */
+        footer {
+            border-top: 1px solid rgba(168,85,247,0.1);
+            padding: 32px; text-align: center;
+            font-size: 0.8rem; color: rgba(255,255,255,0.25);
+            background: rgba(0,0,0,0.3);
+        }
+        .footer-logo { font-family: 'Syncopate', sans-serif; font-size: 1.1rem; font-weight: 700; letter-spacing: 3px; color: rgba(255,255,255,0.6); margin-bottom: 8px; }
+        .footer-logo span { color: var(--violet2); }
+
+        /* ── PRODUCT MODAL ── */
+        #prodModal {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+            z-index: 700; display: none; align-items: center; justify-content: center; padding: 24px;
+            backdrop-filter: blur(8px);
+        }
+        #prodModal.show { display: flex; }
+        .modal-box {
+            background: #0d0d1a; border: 1px solid rgba(168,85,247,0.2);
+            border-radius: 24px; max-width: 640px; width: 100%; overflow: hidden;
+        }
+
+        /* ── TOAST ── */
+        .pk-toast {
+            position: fixed; bottom: 32px; left: 50%;
+            transform: translateX(-50%) translateY(0);
+            background: rgba(15,12,30,0.95);
+            border: 1px solid rgba(168,85,247,0.4);
+            padding: 14px 28px; border-radius: 999px;
+            font-size: 0.85rem; font-weight: 700; letter-spacing: 1px;
+            z-index: 9999; pointer-events: none;
+            box-shadow: 0 0 30px rgba(168,85,247,0.2);
+            transition: all 0.3s;
+        }
+        .pk-toast.hide { opacity: 0; transform: translateX(-50%) translateY(12px); }
+
+        /* ── SCROLL REVEAL ── */
+        .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
+    </style>
+</head>
+<body>
+
+<!-- CUSTOM CURSOR -->
+<div id="cursor"></div>
+<div id="cursorTrail"></div>
+
+<!-- AGE GATE -->
+<div id="ageGate">
+    <canvas id="ageCv" style="position:absolute;inset:0;pointer-events:none;z-index:0"></canvas>
+    <div id="ageBg"></div>
+    <div class="age-box">
+        <div class="age-icon-ring">
+            <i class="fa-solid fa-shield-halved text-3xl" style="color:var(--violet2)"></i>
+        </div>
+        <div class="age-title">21+ ONLY</div>
+        <p class="age-sub">This site contains tobacco, vape &amp;<br>age-restricted products.</p>
+        <button class="age-btn-yes" onclick="enterSite()">✓ &nbsp; YES, I AM 21+</button>
+        <button class="age-btn-no" onclick="leaveSite()">✕ &nbsp; Leave Site</button>
+        <p class="age-fine">Arizona law requires age verification • We ID at pickup</p>
+    </div>
+</div>
+
+<!-- CART PANEL -->
+<div id="cartPanel">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:24px 28px;border-bottom:1px solid rgba(168,85,247,0.15)">
+        <span style="font-family:'Orbitron',monospace;font-size:0.85rem;font-weight:700;letter-spacing:2px">CART</span>
+        <button onclick="toggleCart()" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:#fff;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:none">
+            <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+    </div>
+    <div id="cartItems" style="flex:1;overflow-y:auto;padding:24px 28px;display:flex;flex-direction:column;gap:20px"></div>
+    <div style="padding:20px 28px;border-top:1px solid rgba(168,85,247,0.15)">
+        <div style="display:flex;justify-content:space-between;font-size:0.9rem;margin-bottom:16px">
+            <span style="color:rgba(255,255,255,0.5);letter-spacing:1px">TOTAL</span>
+            <span id="cartTotal" style="font-family:'Orbitron',monospace;color:var(--violet2)">$0.00</span>
+        </div>
+        <button onclick="checkout()" class="btn-glow" style="width:100%;justify-content:center;border-radius:12px;">
+            CHECKOUT &nbsp;<i class="fa-solid fa-arrow-right"></i>
+        </button>
+    </div>
+</div>
+<div id="cartOverlay" onclick="toggleCart()"></div>
+
+<!-- PRODUCT MODAL -->
+<div id="prodModal" onclick="if(event.target===this)closeModal()">
+    <div class="modal-box">
+        <div style="display:flex;justify-content:flex-end;padding:20px 24px">
+            <button onclick="closeModal()" style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:8px;color:rgba(255,255,255,0.6);width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:none">
+                <i class="fa-solid fa-xmark text-xs"></i>
+            </button>
+        </div>
+        <div id="modalBody" style="padding:8px 28px 36px;display:grid;grid-template-columns:1fr 1fr;gap:28px;align-items:start"></div>
+    </div>
+</div>
+
+<!-- NAV -->
+<nav id="nav">
+    <div class="nav-logo">PK<span class="accent"> SMOKE</span></div>
+    <div class="nav-links">
+        <a href="#hero" onclick="gs('hero')">HOME</a>
+        <a href="#shopSection" onclick="gs('shopSection')">SHOP</a>
+        <a href="#aboutSection" onclick="gs('aboutSection')">ABOUT</a>
+        <a href="#dealsSection" onclick="gs('dealsSection')">SPECIALS</a>
+        <a href="#contactSection" onclick="gs('contactSection')">CONTACT</a>
+    </div>
+    <div class="nav-right">
+        <button class="nav-cart" onclick="toggleCart()">
+            <i class="fa-solid fa-bag-shopping text-sm"></i>
+            <span class="cart-count" id="cartBadge">0</span>
+        </button>
+        <button class="menu-btn" onclick="toggleMobile()"><i class="fa-solid fa-bars"></i></button>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero" style="position:relative;min-height:100vh;display:flex;align-items:center;background:radial-gradient(ellipse 80% 60% at 50% 50%, rgba(124,58,237,0.12) 0%, transparent 70%), #080810;overflow:hidden;">
+    <!-- dot grid -->
+    <div class="dot-grid" style="inset:0;position:absolute;"></div>
+
+    <!-- Geometric shapes -->
+    <svg class="geo-shape hex" style="width:600px;height:600px;top:-100px;right:-100px;animation-delay:0s" viewBox="0 0 100 100">
+        <polygon points="50,2 93,26 93,74 50,98 7,74 7,26" fill="none" stroke="rgba(168,85,247,1)" stroke-width="0.8"/>
+        <polygon points="50,10 85,30 85,70 50,90 15,70 15,30" fill="none" stroke="rgba(168,85,247,0.5)" stroke-width="0.4"/>
+    </svg>
+    <svg class="geo-shape hex" style="width:400px;height:400px;bottom:-80px;left:-60px;animation-delay:7s;animation-duration:28s;" viewBox="0 0 100 100">
+        <polygon points="50,2 93,26 93,74 50,98 7,74 7,26" fill="none" stroke="rgba(236,72,153,1)" stroke-width="0.8"/>
+    </svg>
+    <svg class="geo-shape ring" style="width:300px;height:300px;top:30%;right:15%;animation-delay:3s" viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(168,85,247,1)" stroke-width="0.8" stroke-dasharray="8 4"/>
+        <circle cx="50" cy="50" r="35" fill="none" stroke="rgba(168,85,247,0.6)" stroke-width="0.4"/>
+    </svg>
+    <svg class="geo-shape ring" style="width:180px;height:180px;top:10%;left:20%;animation-delay:1s;animation-duration:18s;" viewBox="0 0 100 100">
+        <circle cx="50" cy="50" r="45" fill="none" stroke="rgba(34,211,238,1)" stroke-width="1" stroke-dasharray="5 5"/>
+    </svg>
+
+    <!-- Smoke canvas -->
+    <canvas id="heroCanvas"></canvas>
+
+    <div class="hero-content">
+        <div class="hero-badge">
+            <span class="status-dot"></span>
+            GRAND OPENING · MESA, ARIZONA
+        </div>
+        <h1 class="hero-title">
+            <div>PK</div>
+            <div class="line2">SMOKE</div>
+            <div class="line3">SHOP</div>
+        </h1>
+        <p class="hero-sub">
+            <strong>Premium vapes · Disposables · Glass · Kratom</strong><br>
+            Pokémon &amp; One Piece cards · Hookah · Snacks &amp; drinks<br>
+            <span style="font-size:0.85rem;color:rgba(255,255,255,0.3)">2729 E Main St #102 · Mesa, AZ · Just off Main Street</span>
+        </p>
+        <div class="hero-ctas">
+            <button class="btn-glow" onclick="gs('shopSection')">
+                SHOP NOW <i class="fa-solid fa-arrow-right"></i>
+            </button>
+            <button class="btn-outline" onclick="gs('dealsSection')">
+                OPENING SPECIALS <i class="fa-solid fa-fire" style="color:#f97316"></i>
+            </button>
+        </div>
+        <div class="hero-stats">
+            <div class="stat"><div class="stat-val">4.9★</div><div class="stat-lbl">Google Rating</div></div>
+            <div class="stat"><div class="stat-val">300+</div><div class="stat-lbl">Vape Flavors</div></div>
+            <div class="stat"><div class="stat-val">200+</div><div class="stat-lbl">Reviews</div></div>
+            <div class="stat"><div class="stat-val">$10</div><div class="stat-lbl">Off First Order</div></div>
+        </div>
+    </div>
+
+    <!-- floating pill -->
+    <div style="position:absolute;bottom:32px;right:32px;z-index:10;background:rgba(12,12,24,0.8);backdrop-filter:blur(12px);border:1px solid rgba(168,85,247,0.2);border-radius:999px;padding:10px 20px;display:flex;align-items:center;gap:10px">
+        <i class="fa-solid fa-location-dot" style="color:var(--violet2)"></i>
+        <div>
+            <div style="font-size:9px;color:rgba(255,255,255,0.3);letter-spacing:2px">NOW OPEN</div>
+            <div style="font-family:'Orbitron',monospace;font-size:0.75rem;font-weight:700">MESA, AZ</div>
+        </div>
+    </div>
+</section>
+
+<!-- TRUST BAR -->
+<div class="trust-bar">
+    <div class="trust-item"><i class="fa-solid fa-shield-halved"></i> AUTHORIZED BRANDS</div>
+    <div class="trust-item"><i class="fa-solid fa-clock"></i> SAME DAY PICKUP</div>
+    <div class="trust-item"><i class="fa-solid fa-medal"></i> LOWEST PRICES</div>
+    <div class="trust-item"><i class="fa-solid fa-star"></i> 4.9 STAR RATED</div>
+    <div class="trust-item"><i class="fa-solid fa-cannabis"></i> VAPES · GLASS · KRATOM · CARDS</div>
+</div>
+
+<!-- SHOP -->
+<section id="shopSection" style="padding:100px 0;">
+    <div class="section-wrap">
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:48px" class="reveal">
+            <div>
+                <div class="sec-eyebrow">Premium Collection</div>
+                <h2 class="sec-title">FEATURED<br>RIGHT NOW</h2>
+            </div>
+        </div>
+        <div class="prod-grid reveal" id="prodGrid"></div>
+    </div>
+</section>
+
+<!-- WHAT WE CARRY -->
+<section style="padding:80px 0;background:rgba(255,255,255,0.01);border-top:1px solid rgba(168,85,247,0.08);border-bottom:1px solid rgba(168,85,247,0.08)">
+    <div class="section-wrap">
+        <div class="reveal" style="text-align:center;margin-bottom:48px">
+            <div class="sec-eyebrow" style="justify-content:center">Everything You Need</div>
+            <h2 class="sec-title" style="font-size:clamp(1.8rem,4vw,3rem)">VAPES · GLASS · KRATOM · CARDS · MORE</h2>
+        </div>
+        <div class="cats-grid reveal">
+            <div class="cat-card"><div class="cat-icon">💨</div><div class="cat-name">Premium Vapes & Disposables</div><div class="cat-sub">Elf Bar · Geek Bar · Lost Mary · 300+ flavors in stock</div></div>
+            <div class="cat-card"><div class="cat-icon">🔥</div><div class="cat-name">Glass, Hookah & Dab Rigs</div><div class="cat-sub">Hand-blown glass, hookah sets, premium brands</div></div>
+            <div class="cat-card"><div class="cat-icon">🌿</div><div class="cat-name">Kratom & Tobacco</div><div class="cat-sub">Maeng Da · Capsules · Premium cigars · Rolling papers</div></div>
+            <div class="cat-card"><div class="cat-icon">🃏</div><div class="cat-name">Pokémon & One Piece Cards</div><div class="cat-sub">Buy · Sell · Trade · Labubus & collectibles</div></div>
+            <div class="cat-card"><div class="cat-icon">🧃</div><div class="cat-name">Snacks & Cold Drinks</div><div class="cat-sub">Cold drinks · Ice cream · Everyday snacks & more</div></div>
+            <div class="cat-card"><div class="cat-icon">💜</div><div class="cat-name">Grand Opening Specials</div><div class="cat-sub">50% off select disposables · Use code MESA10 for $10 off</div></div>
+        </div>
+    </div>
+</section>
+
+<!-- DEALS -->
+<section id="dealsSection">
+    <div class="section-wrap" style="padding-top:100px;padding-bottom:100px">
+        <div class="reveal" style="display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center">
+            <div>
+                <div class="sec-eyebrow" style="color:#f97316">🔥 First Month Only</div>
+                <h2 class="sec-title" style="margin-bottom:48px">OPENING<br>BLOWOUT<br>SPECIALS</h2>
+                <div style="display:flex;flex-direction:column;gap:32px">
+                    <div style="display:flex;gap:20px;align-items:flex-start">
+                        <div class="deal-num">01</div>
+                        <div style="padding-top:12px">
+                            <div class="deal-title">50% OFF Select Disposables</div>
+                            <div class="deal-sub">Elf Bar, Geek Bar, Lost Mary — every flavor</div>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:20px;align-items:flex-start">
+                        <div class="deal-num">02</div>
+                        <div style="padding-top:12px">
+                            <div class="deal-title">Free 30mL With Any Kit</div>
+                            <div class="deal-sub">Plus Pokémon booster with any $50+ purchase</div>
+                        </div>
+                    </div>
+                    <div style="display:flex;gap:20px;align-items:flex-start">
+                        <div class="deal-num">03</div>
+                        <div style="padding-top:12px">
+                            <div class="deal-title">$10 Off Your First Order</div>
+                            <div class="deal-sub">Use code <span style="font-family:'Orbitron',monospace;background:rgba(168,85,247,0.15);padding:2px 10px;border-radius:6px;color:var(--violet2)">MESA10</span> in store or online</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div style="position:relative">
+                <img src="https://images.pexels.com/photos/9694213/pexels-photo-9694213.jpeg" style="width:100%;border-radius:24px;display:block" alt="Vape smoke">
+                <div style="position:absolute;inset:-1px;border-radius:24px;border:1px solid rgba(168,85,247,0.3);pointer-events:none"></div>
+                <div style="position:absolute;top:-16px;right:-16px;width:80px;height:80px;border:1px solid rgba(168,85,247,0.15);border-radius:50%;pointer-events:none"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ABOUT -->
+<section id="aboutSection" style="padding:100px 0;background:rgba(255,255,255,0.01);border-top:1px solid rgba(168,85,247,0.08)">
+    <div class="section-wrap">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center" class="reveal">
+            <div style="position:relative">
+                <img src="https://images.pexels.com/photos/9694208/pexels-photo-9694208.jpeg" style="width:100%;border-radius:24px;display:block">
+                <div style="position:absolute;inset:-1px;border-radius:24px;border:1px solid rgba(168,85,247,0.2);pointer-events:none"></div>
+                <!-- Accent corner -->
+                <div style="position:absolute;bottom:-20px;left:-20px;width:80px;height:80px;background:linear-gradient(135deg,var(--violet),var(--violet2));border-radius:16px;opacity:0.3;pointer-events:none"></div>
+            </div>
+            <div>
+                <div class="sec-eyebrow">Mesa's New Go-To</div>
+                <h2 class="sec-title" style="margin-bottom:24px">WE BUILT<br>THE VIBE.</h2>
+                <p style="color:rgba(255,255,255,0.55);font-size:1rem;line-height:1.8;margin-bottom:20px">PK Smoke Shop offers premium cigars, vapes, disposables, kratom, tobacco, rolling papers, glass pipes, hookah gear, and everyday convenience items in Mesa, AZ.</p>
+                <p style="color:rgba(255,255,255,0.4);font-size:0.9rem;line-height:1.8;margin-bottom:40px">Whether you're a casual smoker or need specialty items, our friendly team has you covered. Known as Mesa's most trusted smoke shop, we focus on quality and great service every single day.</p>
+                <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+                    <div style="background:rgba(168,85,247,0.05);border:1px solid rgba(168,85,247,0.15);border-radius:14px;padding:20px;text-align:center">
+                        <div style="font-family:'Orbitron',monospace;font-size:1.5rem;font-weight:900;color:var(--violet2)">300+</div>
+                        <div style="font-size:0.6rem;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,0.3);margin-top:4px">FLAVORS</div>
+                    </div>
+                    <div style="background:rgba(168,85,247,0.05);border:1px solid rgba(168,85,247,0.15);border-radius:14px;padding:20px;text-align:center">
+                        <div style="font-family:'Orbitron',monospace;font-size:1.5rem;font-weight:900;color:var(--violet2)">4.9★</div>
+                        <div style="font-size:0.6rem;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,0.3);margin-top:4px">RATING</div>
+                    </div>
+                    <div style="background:rgba(168,85,247,0.05);border:1px solid rgba(168,85,247,0.15);border-radius:14px;padding:20px;text-align:center">
+                        <div style="font-family:'Orbitron',monospace;font-size:1.5rem;font-weight:900;color:var(--violet2)">200+</div>
+                        <div style="font-size:0.6rem;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,0.3);margin-top:4px">REVIEWS</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- REVIEWS -->
+<section style="padding:80px 0;">
+    <div class="section-wrap" style="margin-bottom:32px">
+        <div class="reveal">
+            <div class="sec-eyebrow">Real Customers</div>
+            <h2 class="sec-title">WHAT THEY SAY</h2>
+        </div>
+    </div>
+    <div class="review-track" id="reviewTrack"></div>
+</section>
+
+<!-- CONTACT -->
+<section id="contactSection">
+    <div class="section-wrap">
+        <div class="contact-grid reveal">
+            <div>
+                <div class="sec-eyebrow">Visit Us</div>
+                <h2 class="sec-title" style="margin-bottom:40px">COME IN.<br>WE'RE OPEN.</h2>
+                <div class="contact-info-item">
+                    <div class="ci-icon"><i class="fa-solid fa-location-dot text-sm"></i></div>
+                    <div><div class="ci-lbl">Address</div><div class="ci-val">2729 E Main St #102<br>Mesa, AZ 85213</div></div>
+                </div>
+                <div class="contact-info-item">
+                    <div class="ci-icon"><i class="fa-solid fa-clock text-sm"></i></div>
+                    <div><div class="ci-lbl">Hours</div><div class="ci-val">Mon–Thu: 9am–10pm<br>Fri–Sat: 9am–11pm<br>Sun: 10am–9pm</div></div>
+                </div>
+                <div class="contact-info-item">
+                    <div class="ci-icon"><i class="fa-solid fa-phone text-sm"></i></div>
+                    <div><div class="ci-lbl">Phone</div><div class="ci-val"><a href="tel:4806001234" style="color:var(--violet2)">(480) 600-1234</a></div></div>
+                </div>
+                <div class="contact-info-item">
+                    <div class="ci-icon"><i class="fa-brands fa-instagram text-sm"></i></div>
+                    <div><div class="ci-lbl">Instagram</div><div class="ci-val"><a href="#" style="color:var(--violet2)">@pksmokeshop</a></div></div>
+                </div>
+            </div>
+            <div class="form-box">
+                <div style="font-family:'Orbitron',monospace;font-size:0.8rem;font-weight:700;letter-spacing:2px;margin-bottom:24px">SEND A MESSAGE</div>
+                <form id="contactForm">
+                    <div class="form-row">
+                        <input class="f-input" type="text" placeholder="First Name" required>
+                        <input class="f-input" type="text" placeholder="Last Name" required>
+                    </div>
+                    <input class="f-input" type="email" placeholder="Email" required style="width:100%;margin-bottom:12px">
+                    <textarea class="f-input" rows="4" placeholder="Your message..." style="width:100%;resize:none;margin-bottom:16px"></textarea>
+                    <button type="submit" class="btn-glow" style="width:100%;justify-content:center;border-radius:12px">SEND MESSAGE</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+    <div class="footer-logo">PK <span>SMOKE</span> SHOP</div>
+    <p>2729 E Main St #102, Mesa, AZ 85213 &nbsp;·&nbsp; Must be 21+ to purchase</p>
+    <p style="margin-top:6px">© 2025 PK Smoke Shop. All rights reserved.</p>
+</footer>
+
+<script>
+// ═══════════════════════════════════════════
+// CURSOR
+// ═══════════════════════════════════════════
+const cursor = document.getElementById('cursor');
+const trail = document.getElementById('cursorTrail');
+let mx=0, my=0, tx=0, ty=0;
+window.addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
+});
+function animTrail() {
+    tx += (mx - tx) * 0.12;
+    ty += (my - ty) * 0.12;
+    trail.style.left = tx + 'px'; trail.style.top = ty + 'px';
+    requestAnimationFrame(animTrail);
+}
+animTrail();
+document.querySelectorAll('a,button').forEach(el => {
+    el.addEventListener('mouseenter', () => { cursor.style.transform = 'translate(-50%,-50%) scale(2)'; trail.style.transform = 'translate(-50%,-50%) scale(0.5)'; });
+    el.addEventListener('mouseleave', () => { cursor.style.transform = 'translate(-50%,-50%) scale(1)'; trail.style.transform = 'translate(-50%,-50%) scale(1)'; });
+});
+
+// ═══════════════════════════════════════════
+// SMOKE CANVAS
+// ═══════════════════════════════════════════
+function initSmokeCanvas(canvasId) {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    canvas.width = canvas.offsetWidth || window.innerWidth;
+    canvas.height = canvas.offsetHeight || window.innerHeight;
+    canvas.style.width = '100%'; canvas.style.height = '100%';
+    window.addEventListener('resize', () => {
+        canvas.width = canvas.offsetWidth;
+        canvas.height = canvas.offsetHeight;
+    });
+    const particles = [];
+    const COLORS = ['rgba(168,85,247,', 'rgba(124,58,237,', 'rgba(236,72,153,', 'rgba(255,255,255,'];
+    for(let i = 0; i < 35; i++) {
+        particles.push({
+            x: Math.random() * canvas.width,
+            y: canvas.height + Math.random() * 200,
+            r: 40 + Math.random() * 120,
+            vx: (Math.random() - 0.5) * 0.4,
+            vy: -(0.3 + Math.random() * 0.8),
+            opacity: 0.03 + Math.random() * 0.08,
+            grow: 0.15 + Math.random() * 0.3,
+            color: COLORS[Math.floor(Math.random() * COLORS.length)],
+            life: Math.random() * 200,
+            maxLife: 180 + Math.random() * 120,
+        });
+    }
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach((p, i) => {
+            p.x += p.vx; p.y += p.vy; p.r += p.grow; p.life++;
+            const fade = Math.min(1, p.life / 40) * Math.max(0, 1 - (p.life - p.maxLife * 0.6) / (p.maxLife * 0.4));
+            const grad = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, p.r);
+            grad.addColorStop(0, p.color + (p.opacity * fade * 1.5) + ')');
+            grad.addColorStop(0.5, p.color + (p.opacity * fade) + ')');
+            grad.addColorStop(1, p.color + '0)');
+            ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+            ctx.fillStyle = grad; ctx.fill();
+            if(p.life > p.maxLife || p.y < -p.r * 2) {
+                particles[i] = {
+                    x: Math.random() * canvas.width,
+                    y: canvas.height + 50,
+                    r: 40 + Math.random() * 80,
+                    vx: (Math.random() - 0.5) * 0.4,
+                    vy: -(0.3 + Math.random() * 0.8),
+                    opacity: 0.03 + Math.random() * 0.08,
+                    grow: 0.15 + Math.random() * 0.3,
+                    color: COLORS[Math.floor(Math.random() * COLORS.length)],
+                    life: 0, maxLife: 180 + Math.random() * 120,
+                };
+            }
+        });
+        requestAnimationFrame(draw);
+    }
+    draw();
+}
+
+// Age gate smoke
+function initAgeSmoke() {
+    const canvas = document.getElementById('ageCv');
+    if(!canvas) return;
+    const parent = canvas.parentElement;
+    canvas.width = parent.offsetWidth || window.innerWidth;
+    canvas.height = parent.offsetHeight || window.innerHeight;
+    const ctx = canvas.getContext('2d');
+    const pts = [];
+    for(let i=0;i<20;i++) pts.push({
+        x:Math.random()*canvas.width, y:canvas.height+100,
+        r:60+Math.random()*100, vx:(Math.random()-.5)*.3, vy:-.4-Math.random()*.5,
+        op:0.04+Math.random()*0.06, grow:.2+Math.random()*.3, life:Math.random()*150, maxLife:200
+    });
+    function df() {
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        pts.forEach((p,i)=>{
+            p.x+=p.vx;p.y+=p.vy;p.r+=p.grow;p.life++;
+            const f=Math.min(1,p.life/30)*Math.max(0,1-(p.life-p.maxLife*.6)/(p.maxLife*.4));
+            const g=ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r);
+            g.addColorStop(0,`rgba(168,85,247,${p.op*f*1.5})`);
+            g.addColorStop(1,`rgba(168,85,247,0)`);
+            ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+            ctx.fillStyle=g;ctx.fill();
+            if(p.life>p.maxLife||p.y<-p.r*2) pts[i]={x:Math.random()*canvas.width,y:canvas.height+50,r:60+Math.random()*80,vx:(Math.random()-.5)*.3,vy:-.4-Math.random()*.5,op:0.04+Math.random()*0.06,grow:.2+Math.random()*.3,life:0,maxLife:200};
+        });
+        requestAnimationFrame(df);
+    }
+    df();
+}
+
+// ═══════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════
+const products = [
+    { id:1, name:"Geek Bar Pulse X", cat:"Disposable", price:24.99, sub:"Miami Mint", img:"https://images.pexels.com/photos/9694212/pexels-photo-9694212.jpeg", stock:"In Stock" },
+    { id:2, name:"Elf Bar BC5000", cat:"Disposable", price:18.99, sub:"Blue Razz Ice", img:"https://images.pexels.com/photos/9694213/pexels-photo-9694213.jpeg", stock:"In Stock" },
+    { id:3, name:"Premium Hookah Set", cat:"Hookah", price:89.99, sub:"Smoke Ready", img:"https://picsum.photos/id/870/600/600", stock:"In Stock" },
+    { id:4, name:"Maeng Da Kratom", cat:"Kratom", price:29.99, sub:"Powder / Capsules", img:"https://picsum.photos/id/201/600/600", stock:"Low Stock" },
+    { id:5, name:"Pokémon S&V Booster", cat:"Trading Cards", price:5.99, sub:"Buy/Sell/Trade", img:"https://picsum.photos/id/202/600/600", stock:"In Stock" }
+];
+
+const reviews = [
+    { name:"Max Spain", text:"Best prices in town. They buy, sell, and trade Pokémon and One Piece cards. Vape selection is amazing and so is their glass. My go-to smoke shop in the East Valley.", img:"https://picsum.photos/id/64/80/80" },
+    { name:"Brittany B.", text:"I go out of my way to shop at PK's. So clean and the variety is unlike anywhere else. The crew is super friendly. The vibe is worth the drive!", img:"https://picsum.photos/id/65/80/80" },
+    { name:"Kenny Nguyen", text:"Great selection, lowest prices for vapes in the valley. They have Pokémon cards, Labubus, snacks and drinks. I'd never have to leave tbh.", img:"https://picsum.photos/id/66/80/80" },
+    { name:"Kyle C.", text:"One of the cleanest shops I've walked into. Felt very welcomed. Bill is top tier with customer service. Definitely will be back!", img:"https://picsum.photos/id/67/80/80" },
+    { name:"Jamie Smith", text:"Paul is awesome! Nice store, great selection. Had One Piece on the TV — made the experience super fun.", img:"https://picsum.photos/id/68/80/80" }
+];
+
+let cart = [];
+
+// ═══════════════════════════════════════════
+// RENDER PRODUCTS
+// ═══════════════════════════════════════════
+function renderProducts() {
+    document.getElementById('prodGrid').innerHTML = products.map(p => `
+        <div class="pcard" onclick="showModal(${p.id})">
+            <div style="position:relative">
+                <img class="pcard-img" src="${p.img}" alt="${p.name}">
+                <div style="position:absolute;top:10px;right:10px;background:rgba(0,0,0,0.7);font-size:9px;font-weight:700;padding:3px 10px;border-radius:999px;letter-spacing:1px">${p.stock}</div>
+            </div>
+            <div class="pcard-body">
+                <div class="pcard-cat">${p.cat}</div>
+                <div class="pcard-name">${p.name}</div>
+                <div class="pcard-sub">${p.sub}</div>
+                <div class="pcard-foot">
+                    <span class="pcard-price">$${p.price}</span>
+                    <button class="pcard-add" onclick="addToCart(${p.id});event.stopPropagation()">+</button>
+                </div>
+            </div>
+        </div>`).join('');
+}
+
+function renderReviews() {
+    document.getElementById('reviewTrack').innerHTML = reviews.map(r => `
+        <div class="review-card">
+            <div style="display:flex;gap:12px;align-items:center;margin-bottom:16px">
+                <img src="${r.img}" style="width:40px;height:40px;border-radius:10px;object-fit:cover">
+                <div>
+                    <div style="font-weight:700;font-size:0.9rem">${r.name}</div>
+                    <div style="color:var(--violet2);font-size:0.7rem;letter-spacing:1px">MESA, AZ</div>
+                </div>
+            </div>
+            <div style="color:#f59e0b;font-size:0.75rem;margin-bottom:10px">★★★★★</div>
+            <div style="color:rgba(255,255,255,0.5);font-size:0.85rem;line-height:1.6;font-style:italic">"${r.text}"</div>
+        </div>`).join('');
+}
+
+// ═══════════════════════════════════════════
+// CART
+// ═══════════════════════════════════════════
+function addToCart(id) {
+    const p = products.find(x=>x.id===id);
+    const ex = cart.find(x=>x.id===id);
+    if(ex) ex.qty++; else cart.push({...p, qty:1});
+    updateBadge();
+    pkToast(`${p.name} added!`);
+}
+
+function updateBadge() {
+    document.getElementById('cartBadge').textContent = cart.reduce((s,i)=>s+i.qty,0);
+}
+
+function toggleCart() {
+    document.getElementById('cartPanel').classList.toggle('open');
+    document.getElementById('cartOverlay').classList.toggle('show');
+    renderCart();
+}
+
+function renderCart() {
+    const c = document.getElementById('cartItems');
+    if(!cart.length) {
+        c.innerHTML = `<div style="text-align:center;padding:60px 0;color:rgba(255,255,255,0.25)"><i class="fa-solid fa-cart-shopping" style="font-size:3rem;margin-bottom:16px;display:block"></i>Cart is empty</div>`;
+        document.getElementById('cartTotal').textContent = '$0.00';
+        return;
+    }
+    let total = 0;
+    c.innerHTML = cart.map((it,i) => {
+        const sub = it.price*it.qty; total+=sub;
+        return `<div style="display:flex;gap:14px">
+            <img src="${it.img}" style="width:64px;height:64px;object-fit:cover;border-radius:10px;flex-shrink:0">
+            <div style="flex:1">
+                <div style="font-weight:700;font-size:0.85rem;margin-bottom:2px">${it.name}</div>
+                <div style="color:rgba(255,255,255,0.35);font-size:0.75rem;margin-bottom:10px">${it.sub}</div>
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                    <div style="display:flex;align-items:center;gap:10px;font-size:0.8rem">
+                        <button onclick="qty(${i},-1)" style="width:24px;height:24px;border:1px solid rgba(255,255,255,0.15);border-radius:6px;background:transparent;color:#fff;display:flex;align-items:center;justify-content:center;cursor:none">-</button>
+                        <span>${it.qty}</span>
+                        <button onclick="qty(${i},1)" style="width:24px;height:24px;border:1px solid rgba(255,255,255,0.15);border-radius:6px;background:transparent;color:#fff;display:flex;align-items:center;justify-content:center;cursor:none">+</button>
+                    </div>
+                    <div style="text-align:right">
+                        <div style="font-family:'Orbitron',monospace;font-size:0.85rem;color:var(--violet2)">$${sub.toFixed(2)}</div>
+                        <button onclick="rmItem(${i})" style="color:#f87171;font-size:0.7rem;background:none;border:none;cursor:none;margin-top:4px">Remove</button>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+    }).join('');
+    document.getElementById('cartTotal').textContent = `$${total.toFixed(2)}`;
+}
+
+function qty(i,d) { cart[i].qty=Math.max(1,cart[i].qty+d); renderCart(); updateBadge(); }
+function rmItem(i) { cart.splice(i,1); renderCart(); updateBadge(); }
+function checkout() {
+    if(!cart.length) return;
+    alert('✅ Thank you! Demo checkout — in real life this connects to local pickup at PK Smoke Shop, 2729 E Main St #102, Mesa, AZ.');
+    cart=[]; updateBadge(); toggleCart();
+}
+
+// ═══════════════════════════════════════════
+// MODAL
+// ═══════════════════════════════════════════
+function showModal(id) {
+    const p = products.find(x=>x.id===id);
+    document.getElementById('modalBody').innerHTML = `
+        <div><img src="${p.img}" style="width:100%;border-radius:16px;display:block"></div>
+        <div style="display:flex;flex-direction:column;gap:16px">
+            <div>
+                <div style="font-size:0.6rem;font-weight:700;letter-spacing:3px;color:var(--violet2);margin-bottom:6px">${p.cat}</div>
+                <div style="font-family:'Syncopate',sans-serif;font-size:1rem;font-weight:700;margin-bottom:6px">${p.name}</div>
+                <div style="color:rgba(255,255,255,0.45);margin-bottom:16px">${p.sub}</div>
+                <div style="font-family:'Orbitron',monospace;font-size:2rem;font-weight:900">$${p.price}</div>
+            </div>
+            <p style="color:rgba(255,255,255,0.4);font-size:0.85rem;line-height:1.6">Premium quality. Thick clouds. The exact vibe you expect from PK Smoke Shop in Mesa, AZ.</p>
+            <button onclick="addToCart(${p.id});closeModal()" class="btn-glow" style="justify-content:center;border-radius:12px">
+                ADD TO CART <i class="fa-solid fa-cart-plus"></i>
+            </button>
+        </div>`;
+    document.getElementById('prodModal').classList.add('show');
+}
+function closeModal() { document.getElementById('prodModal').classList.remove('show'); }
+
+// ═══════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════
+function pkToast(msg) {
+    const t = document.createElement('div');
+    t.className = 'pk-toast'; t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(() => { t.classList.add('hide'); setTimeout(()=>t.remove(),300); }, 2200);
+}
+
+// ═══════════════════════════════════════════
+// SCROLL REVEAL
+// ═══════════════════════════════════════════
+const obs = new IntersectionObserver(entries => {
+    entries.forEach((e,i) => {
+        if(e.isIntersecting) {
+            setTimeout(() => e.target.classList.add('visible'), i*80);
+            obs.unobserve(e.target);
+        }
+    });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+// ═══════════════════════════════════════════
+// MISC
+// ═══════════════════════════════════════════
+function gs(id) { document.getElementById(id)?.scrollIntoView({behavior:'smooth'}); }
+function toggleMobile() { /* simplified for premium */ }
+function enterSite() {
+    document.getElementById('ageGate').style.opacity = '0';
+    document.getElementById('ageGate').style.transition = 'opacity 0.6s';
+    setTimeout(() => document.getElementById('ageGate').style.display='none', 600);
+}
+function leaveSite() { window.location.href='https://google.com'; }
+
+window.addEventListener('scroll', () => {
+    document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 60);
+});
+
+document.getElementById('contactForm').addEventListener('submit', e => {
+    e.preventDefault();
+    pkToast('✅ Message sent! We\'ll be in touch.');
+    e.target.reset();
+});
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+window.onload = () => {
+    initAgeSmoke();
+    renderProducts();
+    renderReviews();
+    setTimeout(() => initSmokeCanvas('heroCanvas'), 100);
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PK Smoke Shop • Mesa, AZ • Now Open</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+    <style>
+        :root { --ink: #7c3aed; --glow: #c084fc; }
+        body { font-family: 'Outfit', sans-serif; }
+        .brand-font { font-family: 'Syne', sans-serif; }
+
+        .hero-bg {
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.85)),
+                url('https://images.pexels.com/photos/9694212/pexels-photo-9694212.jpeg') center/cover no-repeat fixed;
+        }
+
+        /* Neon glow */
+        .neon { text-shadow: 0 0 15px var(--glow), 0 0 40px var(--ink), 0 0 80px var(--ink); }
+
+        /* Smoke puff */
+        .puff {
+            position: absolute; border-radius: 50%; pointer-events: none;
+            background: radial-gradient(circle, rgba(255,255,255,0.18) 0%, transparent 70%);
+            filter: blur(10px);
+        }
+        .puff-1 { width: 350px; height: 350px; top: 15%; left: 5%; animation: rise 12s infinite linear; }
+        .puff-2 { width: 280px; height: 280px; top: 50%; right: 8%; animation: rise 9s 4s infinite linear; }
+        .puff-3 { width: 220px; height: 220px; bottom: 20%; left: 40%; animation: rise 15s 8s infinite linear; }
+        @keyframes rise {
+            0% { transform: translateY(0) scale(0.8); opacity: 0.6; }
+            100% { transform: translateY(-600px) scale(2.5); opacity: 0; }
+        }
+
+        /* Cards */
+        .prod-card { transition: transform 0.35s cubic-bezier(.4,0,.2,1), box-shadow 0.35s; }
+        .prod-card:hover { transform: translateY(-10px) scale(1.025); box-shadow: 0 20px 60px -10px rgba(168,85,247,0.35); }
+
+        /* Cart */
+        .cart-panel { transform: translateX(100%); transition: transform 0.45s cubic-bezier(.32,.72,0,1); }
+        .cart-panel.open { transform: translateX(0); }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #18181b; }
+        ::-webkit-scrollbar-thumb { background: var(--ink); border-radius: 3px; }
+
+        /* Nav scroll effect */
+        nav { transition: background 0.3s, box-shadow 0.3s; }
+        nav.scrolled { background: rgba(9,9,11,0.95) !important; box-shadow: 0 4px 30px rgba(0,0,0,0.5); }
+
+        /* Deal counter */
+        .deal-badge { animation: pulse-badge 2s infinite; }
+        @keyframes pulse-badge {
+            0%,100% { box-shadow: 0 0 0 0 rgba(168,85,247,0.5); }
+            50% { box-shadow: 0 0 0 12px rgba(168,85,247,0); }
+        }
+
+        /* Testimonial scroll */
+        .testimonial-track { display: flex; gap: 24px; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: 12px; scrollbar-width: thin; }
+        .testimonial-track::-webkit-scrollbar { height: 4px; }
+        .testimonial-card { min-width: 320px; scroll-snap-align: start; }
+
+        /* Toast */
+        .toast { position: fixed; bottom: 32px; left: 50%; transform: translateX(-50%) translateY(0); transition: all 0.3s; z-index: 9999; }
+        .toast.hide { transform: translateX(-50%) translateY(20px); opacity: 0; }
+
+        /* Mobile menu slide */
+        .mobile-nav { max-height: 0; overflow: hidden; transition: max-height 0.4s ease; }
+        .mobile-nav.open { max-height: 400px; }
+    </style>
+</head>
+<body class="bg-zinc-950 text-white overflow-x-hidden">
+
+<!-- AGE GATE -->
+<div id="ageGate" class="fixed inset-0 bg-black/95 z-[9999] flex items-center justify-center">
+    <div class="max-w-md w-full mx-4 bg-zinc-900 rounded-2xl p-10 text-center border border-white/10">
+        <div class="w-20 h-20 bg-amber-400/10 rounded-full flex items-center justify-center mx-auto mb-6">
+            <i class="fa-solid fa-shield-halved text-amber-400 text-4xl"></i>
+        </div>
+        <h2 class="brand-font text-4xl font-extrabold mb-3">MUST BE 21+</h2>
+        <p class="text-zinc-400 mb-8">This website contains tobacco, vape &amp; adult products.<br>You must be of legal age to enter.</p>
+        <div class="flex gap-4">
+            <button onclick="enterSite()" class="flex-1 bg-violet-600 hover:bg-violet-700 transition font-bold py-5 rounded-xl text-lg">
+                ✓&nbsp; YES, I AM 21+
+            </button>
+            <button onclick="leaveSite()" class="flex-1 bg-zinc-800 hover:bg-zinc-700 transition font-semibold py-5 rounded-xl text-zinc-300 text-lg">
+                ✕&nbsp; Leave
+            </button>
+        </div>
+        <p class="text-[10px] text-zinc-600 mt-6">Arizona law requires age verification • We ID at pickup</p>
+    </div>
+</div>
+
+<!-- CART PANEL -->
+<div id="cartPanel" class="cart-panel fixed right-0 top-0 bottom-0 w-full max-w-md bg-zinc-900 z-[500] flex flex-col border-l border-white/10 shadow-2xl">
+    <div class="flex items-center justify-between p-6 border-b border-white/10">
+        <h3 class="brand-font text-2xl font-extrabold">YOUR CART</h3>
+        <button onclick="toggleCart()" class="text-zinc-400 hover:text-white w-10 h-10 flex items-center justify-center rounded-lg bg-white/5 transition">
+            <i class="fa-solid fa-xmark text-xl"></i>
+        </button>
+    </div>
+    <div id="cartItems" class="flex-1 overflow-y-auto p-6 space-y-6"></div>
+    <div class="p-6 border-t border-white/10">
+        <div class="flex justify-between text-lg font-semibold mb-4">
+            <span>Total</span><span id="cartTotal" class="text-violet-400">$0.00</span>
+        </div>
+        <button onclick="checkout()" class="w-full bg-violet-600 hover:bg-violet-700 transition py-5 rounded-xl font-bold text-lg">
+            CHECKOUT &nbsp;<i class="fa-solid fa-arrow-right"></i>
+        </button>
+    </div>
+</div>
+<div id="cartOverlay" class="hidden fixed inset-0 bg-black/60 z-[499]" onclick="toggleCart()"></div>
+
+<!-- NAV -->
+<nav id="mainNav" class="fixed top-0 left-0 right-0 z-50 bg-zinc-950/80 backdrop-blur-xl border-b border-white/10">
+    <div class="max-w-7xl mx-auto px-6 flex items-center justify-between h-16">
+        <div class="flex items-center gap-3">
+            <div class="w-9 h-9 bg-gradient-to-br from-violet-500 to-fuchsia-500 rounded-xl flex items-center justify-center">🌫️</div>
+            <span class="brand-font text-2xl font-extrabold tracking-tight">PK <span class="text-violet-400">SMOKE</span></span>
+        </div>
+        <div class="hidden md:flex items-center gap-8 text-sm font-semibold tracking-wide">
+            <a href="#home" onclick="scroll2('home')" class="text-zinc-400 hover:text-white transition">HOME</a>
+            <a href="#shop" onclick="scroll2('shop')" class="text-zinc-400 hover:text-white transition">SHOP</a>
+            <a href="#about" onclick="scroll2('about')" class="text-zinc-400 hover:text-white transition">ABOUT</a>
+            <a href="#deals" onclick="scroll2('deals')" class="text-zinc-400 hover:text-white transition">SPECIALS</a>
+            <a href="#contact" onclick="scroll2('contact')" class="text-zinc-400 hover:text-white transition">CONTACT</a>
+        </div>
+        <div class="flex items-center gap-4">
+            <button onclick="toggleCart()" class="relative p-2 hover:text-violet-400 transition">
+                <i class="fa-solid fa-bag-shopping text-xl"></i>
+                <span id="cartBadge" class="absolute -top-1 -right-1 bg-violet-600 text-[10px] font-bold w-5 h-5 rounded-full flex items-center justify-center">0</span>
+            </button>
+            <button class="md:hidden p-2" onclick="toggleMobile()"><i id="menuIcon" class="fa-solid fa-bars text-xl"></i></button>
+        </div>
+    </div>
+    <div id="mobileNav" class="mobile-nav md:hidden bg-zinc-900 border-t border-white/10">
+        <div class="flex flex-col px-6 py-6 gap-5 text-lg font-semibold">
+            <a onclick="scroll2('home');toggleMobile()" class="hover:text-violet-400 transition cursor-pointer">Home</a>
+            <a onclick="scroll2('shop');toggleMobile()" class="hover:text-violet-400 transition cursor-pointer">Shop</a>
+            <a onclick="scroll2('about');toggleMobile()" class="hover:text-violet-400 transition cursor-pointer">About Us</a>
+            <a onclick="scroll2('deals');toggleMobile()" class="hover:text-violet-400 transition cursor-pointer">Specials</a>
+            <a onclick="scroll2('contact');toggleMobile()" class="hover:text-violet-400 transition cursor-pointer">Contact</a>
+        </div>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section id="home" class="hero-bg min-h-screen flex items-center relative overflow-hidden">
+    <div class="puff puff-1"></div>
+    <div class="puff puff-2"></div>
+    <div class="puff puff-3"></div>
+
+    <div class="max-w-7xl mx-auto px-6 py-32 relative z-10">
+        <div class="max-w-3xl">
+            <div class="inline-flex items-center gap-3 bg-white/10 backdrop-blur px-5 py-2 rounded-full text-sm font-semibold mb-8">
+                <span class="w-2.5 h-2.5 bg-green-400 rounded-full animate-pulse"></span>
+                GRAND OPENING • MESA, AZ
+            </div>
+            <h1 class="brand-font text-8xl md:text-9xl font-extrabold leading-none tracking-tight mb-6">
+                PK<br>SMOKE<br><span class="text-violet-400 neon">SHOP</span>
+            </h1>
+            <p class="text-xl text-zinc-300 max-w-lg mb-10">
+                Premium vapes • Disposables • Glass • Kratom • Pokémon & One Piece cards • Hookah • Snacks & drinks
+                <br><span class="text-sm text-zinc-500 mt-1 block">2729 E Main St #102 • Mesa, Arizona</span>
+            </p>
+            <div class="flex flex-wrap gap-4 mb-12">
+                <button onclick="scroll2('shop')" class="bg-violet-600 hover:bg-violet-700 transition px-10 py-5 rounded-2xl font-bold text-lg flex items-center gap-3">
+                    SHOP NOW <i class="fa-solid fa-arrow-right"></i>
+                </button>
+                <button onclick="scroll2('deals')" class="border border-white/30 hover:border-violet-400 hover:text-violet-400 transition px-8 py-5 rounded-2xl font-semibold text-lg">
+                    OPENING SPECIALS
+                </button>
+            </div>
+            <div class="flex items-center gap-5 text-sm">
+                <div class="flex -space-x-3">
+                    <img src="https://picsum.photos/id/64/64/64" class="w-9 h-9 rounded-xl ring-2 ring-zinc-950 object-cover">
+                    <img src="https://picsum.photos/id/65/64/64" class="w-9 h-9 rounded-xl ring-2 ring-zinc-950 object-cover">
+                    <img src="https://picsum.photos/id/66/64/64" class="w-9 h-9 rounded-xl ring-2 ring-zinc-950 object-cover">
+                </div>
+                <div>
+                    <div class="font-bold">4.9 ★ &nbsp;·&nbsp; 200+ Google Reviews</div>
+                    <div class="text-violet-400 text-xs">"Best smoke shop in the East Valley"</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating location pill -->
+    <div class="absolute bottom-10 right-6 bg-zinc-900/80 backdrop-blur px-5 py-3 rounded-2xl flex items-center gap-3 border border-white/10">
+        <i class="fa-solid fa-location-dot text-violet-400"></i>
+        <div>
+            <div class="text-[10px] text-zinc-500 uppercase tracking-widest">Now Open</div>
+            <div class="font-bold text-sm">Mesa, Arizona</div>
+        </div>
+    </div>
+</section>
+
+<!-- TRUST BAR -->
+<div class="bg-zinc-900 py-5 border-y border-white/10">
+    <div class="max-w-7xl mx-auto px-6 flex flex-wrap justify-center gap-x-14 gap-y-3 text-xs font-semibold text-zinc-400 tracking-wider">
+        <div class="flex items-center gap-2"><i class="fa-solid fa-shield-halved text-violet-400"></i> AUTHORIZED BRANDS</div>
+        <div class="flex items-center gap-2"><i class="fa-solid fa-clock text-violet-400"></i> SAME DAY PICKUP</div>
+        <div class="flex items-center gap-2"><i class="fa-solid fa-medal text-violet-400"></i> BEST PRICES IN TOWN</div>
+        <div class="flex items-center gap-2"><i class="fa-solid fa-star text-violet-400"></i> 4.9 STAR RATED</div>
+        <div class="flex items-center gap-2"><i class="fa-solid fa-cannabis text-violet-400"></i> VAPES · GLASS · KRATOM · CARDS</div>
+    </div>
+</div>
+
+<!-- SHOP -->
+<section id="shop" class="py-24 max-w-7xl mx-auto px-6">
+    <div class="flex justify-between items-end mb-12">
+        <div>
+            <div class="text-violet-400 text-xs font-bold uppercase tracking-[3px] mb-2">Premium Collection</div>
+            <h2 class="brand-font text-5xl font-extrabold tracking-tight">Featured Right Now</h2>
+        </div>
+        <div class="hidden md:flex items-center gap-2 text-sm text-zinc-400">
+            <i class="fa-solid fa-filter"></i> 5 products
+        </div>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5" id="productGrid"></div>
+</section>
+
+<!-- WHAT WE CARRY -->
+<section class="bg-zinc-900 py-20">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center mb-12">
+            <div class="text-violet-400 text-xs font-bold uppercase tracking-[3px] mb-2">Everything You Need</div>
+            <h2 class="brand-font text-5xl font-extrabold tracking-tight">Vapes · Glass · Kratom · Cards · More</h2>
+        </div>
+        <div class="grid sm:grid-cols-2 md:grid-cols-4 gap-6">
+            <div class="bg-zinc-950 border border-white/10 rounded-2xl p-8 text-center hover:border-violet-500/50 transition">
+                <i class="fa-solid fa-cloud text-5xl text-violet-400 mb-5"></i>
+                <div class="font-bold text-lg mb-2">Premium Vapes & Disposables</div>
+                <div class="text-zinc-500 text-sm">Elf Bar · Geek Bar · Lost Mary · 300+ flavors</div>
+            </div>
+            <div class="bg-zinc-950 border border-white/10 rounded-2xl p-8 text-center hover:border-violet-500/50 transition">
+                <i class="fa-solid fa-wine-glass text-5xl text-violet-400 mb-5"></i>
+                <div class="font-bold text-lg mb-2">Glass, Hookah & Dab Rigs</div>
+                <div class="text-zinc-500 text-sm">Hand-blown glass · Premium brands</div>
+            </div>
+            <div class="bg-zinc-950 border border-white/10 rounded-2xl p-8 text-center hover:border-violet-500/50 transition">
+                <i class="fa-solid fa-leaf text-5xl text-violet-400 mb-5"></i>
+                <div class="font-bold text-lg mb-2">Kratom · Tobacco · Papers</div>
+                <div class="text-zinc-500 text-sm">Maeng Da · Capsules · Premium cigars</div>
+            </div>
+            <div class="bg-zinc-950 border border-white/10 rounded-2xl p-8 text-center hover:border-violet-500/50 transition">
+                <i class="fa-solid fa-gamepad text-5xl text-violet-400 mb-5"></i>
+                <div class="font-bold text-lg mb-2">Pokémon · One Piece & Snacks</div>
+                <div class="text-zinc-500 text-sm">Buy · Sell · Trade · Cold drinks & ice cream</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- GRAND OPENING SPECIALS -->
+<section id="deals" class="py-24 bg-gradient-to-b from-zinc-900 to-zinc-950">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="grid md:grid-cols-2 gap-16 items-center">
+            <div>
+                <div class="text-amber-400 text-xs font-bold uppercase tracking-[3px] mb-3">🔥 First Month Only</div>
+                <h2 class="brand-font text-7xl font-extrabold leading-none tracking-tight mb-10">OPENING<br>BLOWOUT<br>SPECIALS</h2>
+                <div class="space-y-8">
+                    <div class="flex gap-6 items-start">
+                        <div class="brand-font text-6xl font-extrabold text-violet-900/60">01</div>
+                        <div>
+                            <div class="font-bold text-2xl mb-1">50% OFF Select Disposables</div>
+                            <div class="text-zinc-400">Elf Bar, Geek Bar, Lost Mary — every flavor in stock</div>
+                        </div>
+                    </div>
+                    <div class="flex gap-6 items-start">
+                        <div class="brand-font text-6xl font-extrabold text-violet-900/60">02</div>
+                        <div>
+                            <div class="font-bold text-2xl mb-1">Free 30mL With Any Kit</div>
+                            <div class="text-zinc-400">Plus Pokémon booster pack with $50+ purchase</div>
+                        </div>
+                    </div>
+                    <div class="flex gap-6 items-start">
+                        <div class="brand-font text-6xl font-extrabold text-violet-900/60">03</div>
+                        <div>
+                            <div class="font-bold text-2xl mb-1">$10 Off Your First Order</div>
+                            <div class="text-zinc-400">Use code <span class="font-mono bg-white/10 px-2 py-0.5 rounded-lg text-white">MESA10</span> in store or online</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <img src="https://images.pexels.com/photos/9694213/pexels-photo-9694213.jpeg"
+                     class="w-full rounded-3xl shadow-2xl" alt="Vape smoke">
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about" class="py-24 max-w-7xl mx-auto px-6">
+    <div class="grid md:grid-cols-2 gap-20 items-center">
+        <div>
+            <img src="https://images.pexels.com/photos/9694208/pexels-photo-9694208.jpeg"
+                 class="rounded-3xl shadow-2xl w-full" alt="About PK">
+        </div>
+        <div>
+            <div class="text-violet-400 text-xs font-bold uppercase tracking-[3px] mb-3">Mesa's New Go-To</div>
+            <h2 class="brand-font text-6xl font-extrabold leading-none tracking-tight mb-6">We didn't just open a shop. We built the vibe.</h2>
+            <p class="text-zinc-300 text-lg leading-relaxed mb-6">PK Smoke Shop in Mesa offers premium cigars, vapes, disposables, kratom, tobacco, rolling papers, glass pipes, hookah gear, and everyday convenience items. We carry top brands for all preferences and budgets.</p>
+            <p class="text-zinc-400 leading-relaxed mb-8">Whether you're a casual smoker or need specialty items, our friendly team is here. As Mesa's trusted local smoke shop, we focus on quality products and great service every day.</p>
+            <div class="grid grid-cols-3 gap-6">
+                <div class="bg-zinc-900 rounded-2xl p-5 text-center border border-white/10">
+                    <div class="brand-font text-3xl font-extrabold text-violet-400">300+</div>
+                    <div class="text-xs text-zinc-500 mt-1">VAPE FLAVORS</div>
+                </div>
+                <div class="bg-zinc-900 rounded-2xl p-5 text-center border border-white/10">
+                    <div class="brand-font text-3xl font-extrabold text-violet-400">4.9★</div>
+                    <div class="text-xs text-zinc-500 mt-1">GOOGLE RATING</div>
+                </div>
+                <div class="bg-zinc-900 rounded-2xl p-5 text-center border border-white/10">
+                    <div class="brand-font text-3xl font-extrabold text-violet-400">200+</div>
+                    <div class="text-xs text-zinc-500 mt-1">REVIEWS</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- REVIEWS -->
+<section class="py-20 bg-zinc-900 overflow-hidden">
+    <div class="max-w-7xl mx-auto px-6 mb-10">
+        <div class="text-violet-400 text-xs font-bold uppercase tracking-[3px] mb-2">Real Reviews</div>
+        <h2 class="brand-font text-5xl font-extrabold tracking-tight">What Customers Say</h2>
+    </div>
+    <div class="testimonial-track px-6" id="reviewTrack"></div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="py-24 max-w-7xl mx-auto px-6">
+    <div class="grid md:grid-cols-2 gap-16">
+        <div>
+            <div class="text-violet-400 text-xs font-bold uppercase tracking-[3px] mb-3">Get In Touch</div>
+            <h2 class="brand-font text-5xl font-extrabold tracking-tight mb-8">Come Visit Us</h2>
+            <div class="space-y-6">
+                <div class="flex items-start gap-5">
+                    <div class="w-12 h-12 bg-violet-500/15 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <i class="fa-solid fa-location-dot text-violet-400"></i>
+                    </div>
+                    <div>
+                        <div class="font-semibold mb-1">Address</div>
+                        <div class="text-zinc-400">2729 E Main St #102<br>Mesa, AZ 85213</div>
+                    </div>
+                </div>
+                <div class="flex items-start gap-5">
+                    <div class="w-12 h-12 bg-violet-500/15 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <i class="fa-solid fa-clock text-violet-400"></i>
+                    </div>
+                    <div>
+                        <div class="font-semibold mb-1">Hours</div>
+                        <div class="text-zinc-400">Mon–Thu: 9am–10pm<br>Fri–Sat: 9am–11pm<br>Sun: 10am–9pm</div>
+                    </div>
+                </div>
+                <div class="flex items-start gap-5">
+                    <div class="w-12 h-12 bg-violet-500/15 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <i class="fa-solid fa-phone text-violet-400"></i>
+                    </div>
+                    <div>
+                        <div class="font-semibold mb-1">Phone</div>
+                        <a href="tel:4806001234" class="text-violet-400 hover:underline">(480) 600-1234</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="bg-zinc-900 rounded-3xl p-8 border border-white/10">
+            <h3 class="brand-font text-2xl font-extrabold mb-6">Send a Message</h3>
+            <form id="contactForm">
+                <div class="grid grid-cols-2 gap-4 mb-4">
+                    <input type="text" placeholder="First Name" required class="bg-zinc-950 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500 transition">
+                    <input type="text" placeholder="Last Name" required class="bg-zinc-950 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500 transition">
+                </div>
+                <input type="email" placeholder="Email" required class="w-full bg-zinc-950 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500 transition mb-4">
+                <textarea placeholder="Message" rows="4" class="w-full bg-zinc-950 border border-white/10 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500 transition mb-4 resize-none"></textarea>
+                <button type="submit" class="w-full bg-violet-600 hover:bg-violet-700 transition py-4 rounded-xl font-bold">SEND MESSAGE</button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="bg-zinc-950 border-t border-white/10 py-10">
+    <div class="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-zinc-500">
+        <div class="brand-font text-2xl font-extrabold text-white">PK <span class="text-violet-400">SMOKE</span></div>
+        <p>2729 E Main St #102, Mesa, AZ 85213 &nbsp;•&nbsp; Must be 21+</p>
+        <p>© 2025 PK Smoke Shop</p>
+    </div>
+</footer>
+
+<!-- Product Modal -->
+<div id="prodModal" class="hidden fixed inset-0 bg-black/90 z-[600] flex items-center justify-center p-4">
+    <div class="bg-zinc-900 max-w-2xl w-full rounded-3xl overflow-hidden">
+        <div class="flex justify-end p-5">
+            <button onclick="closeModal()" class="text-zinc-400 hover:text-white w-9 h-9 bg-white/5 rounded-lg flex items-center justify-center">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="px-8 pb-10 grid md:grid-cols-2 gap-8" id="modalBody"></div>
+    </div>
+</div>
+
+<script>
+const products = [
+    { id:1, name:"Geek Bar Pulse X", cat:"Disposable", price:24.99, sub:"Miami Mint", img:"https://images.pexels.com/photos/9694212/pexels-photo-9694212.jpeg", stock:"In Stock" },
+    { id:2, name:"Elf Bar BC5000", cat:"Disposable", price:18.99, sub:"Blue Razz Ice", img:"https://images.pexels.com/photos/9694213/pexels-photo-9694213.jpeg", stock:"In Stock" },
+    { id:3, name:"Premium Hookah Set", cat:"Hookah", price:89.99, sub:"Smoke Ready", img:"https://picsum.photos/id/870/600/600", stock:"In Stock" },
+    { id:4, name:"Maeng Da Kratom", cat:"Kratom", price:29.99, sub:"Powder / Capsules", img:"https://picsum.photos/id/201/600/600", stock:"Low Stock" },
+    { id:5, name:"Pokémon S&V Booster", cat:"Trading Cards", price:5.99, sub:"Buy/Sell/Trade", img:"https://picsum.photos/id/202/600/600", stock:"In Stock" }
+];
+
+const reviews = [
+    { name:"Max Spain", text:"Best prices in town. They buy, sell, and trade Pokémon and One Piece cards. Vape selection is amazing and so is their glass. My go-to smoke shop in the East Valley.", img:"https://picsum.photos/id/64/80/80" },
+    { name:"Brittany B.", text:"I go out of my way to shop at PK's. So clean and the variety is unlike anywhere else. Niko, Adam and the crew are super friendly. The vibe is worth the drive!", img:"https://picsum.photos/id/65/80/80" },
+    { name:"Kenny Nguyen", text:"Great selection, lowest prices for vapes in the valley. They have Pokémon cards, Labubus, snacks and drinks. I'd never have to leave tbh.", img:"https://picsum.photos/id/66/80/80" },
+    { name:"Kyle C.", text:"One of the cleanest shops I've walked into. Felt very welcomed. Bill is top tier with customer service. Definitely will be back!", img:"https://picsum.photos/id/67/80/80" },
+    { name:"Jamie Smith", text:"Paul is awesome! Nice store, great selection. If they don't have it, they'll order it quickly. Had One Piece on the TV — made the experience super fun.", img:"https://picsum.photos/id/68/80/80" }
+];
+
+let cart = [];
+
+function renderProducts() {
+    const g = document.getElementById('productGrid');
+    g.innerHTML = products.map(p => `
+        <div class="prod-card bg-zinc-900 rounded-2xl overflow-hidden border border-white/10 cursor-pointer" onclick="showModal(${p.id})">
+            <div class="relative">
+                <img src="${p.img}" class="w-full h-52 object-cover">
+                <div class="absolute top-3 right-3 bg-black/70 text-[10px] font-bold px-2 py-0.5 rounded-full">${p.stock}</div>
+            </div>
+            <div class="p-5">
+                <div class="text-violet-400 text-[10px] font-bold uppercase tracking-widest mb-1">${p.cat}</div>
+                <div class="font-bold text-base mb-0.5">${p.name}</div>
+                <div class="text-zinc-400 text-xs mb-4">${p.sub}</div>
+                <div class="flex justify-between items-center">
+                    <span class="text-2xl font-bold">$${p.price}</span>
+                    <button onclick="addToCart(${p.id});event.stopPropagation()" class="bg-violet-600 hover:bg-violet-700 w-10 h-10 rounded-xl flex items-center justify-center text-lg transition">+</button>
+                </div>
+            </div>
+        </div>`).join('');
+}
+
+function renderReviews() {
+    const t = document.getElementById('reviewTrack');
+    t.innerHTML = reviews.map(r => `
+        <div class="testimonial-card bg-zinc-950 border border-white/10 rounded-2xl p-8">
+            <div class="flex gap-3 items-center mb-5">
+                <img src="${r.img}" class="w-11 h-11 rounded-xl object-cover">
+                <div>
+                    <div class="font-semibold text-sm">${r.name}</div>
+                    <div class="text-violet-400 text-xs">Mesa, AZ</div>
+                </div>
+            </div>
+            <div class="text-yellow-400 text-xs mb-3">★★★★★</div>
+            <div class="text-zinc-300 text-sm italic leading-relaxed">"${r.text}"</div>
+        </div>`).join('');
+}
+
+function addToCart(id) {
+    const p = products.find(x => x.id === id);
+    const ex = cart.find(x => x.id === id);
+    if(ex) ex.qty++;
+    else cart.push({...p, qty:1});
+    updateBadge();
+    toast(`${p.name} added to cart!`);
+}
+
+function updateBadge() {
+    document.getElementById('cartBadge').textContent = cart.reduce((s,i)=>s+i.qty,0);
+}
+
+function toggleCart() {
+    const p = document.getElementById('cartPanel');
+    const o = document.getElementById('cartOverlay');
+    p.classList.toggle('open');
+    o.classList.toggle('hidden');
+    if(p.classList.contains('open')) renderCart();
+}
+
+function renderCart() {
+    const c = document.getElementById('cartItems');
+    if(!cart.length) {
+        c.innerHTML = `<div class="text-center py-20 text-zinc-500"><i class="fa-solid fa-cart-shopping text-5xl mb-4"></i><div class="mt-4">Your cart is empty</div></div>`;
+        document.getElementById('cartTotal').textContent = '$0.00';
+        return;
+    }
+    let total = 0;
+    c.innerHTML = cart.map((item,i) => {
+        const sub = item.price * item.qty;
+        total += sub;
+        return `<div class="flex gap-4">
+            <img src="${item.img}" class="w-20 h-20 object-cover rounded-xl flex-shrink-0">
+            <div class="flex-1">
+                <div class="font-semibold text-sm">${item.name}</div>
+                <div class="text-zinc-500 text-xs mb-3">${item.sub}</div>
+                <div class="flex justify-between items-center">
+                    <div class="flex items-center gap-3 text-sm">
+                        <button onclick="qty(${i},-1)" class="w-6 h-6 border border-white/20 rounded-lg hover:bg-white/10 transition flex items-center justify-center">-</button>
+                        <span>${item.qty}</span>
+                        <button onclick="qty(${i},1)" class="w-6 h-6 border border-white/20 rounded-lg hover:bg-white/10 transition flex items-center justify-center">+</button>
+                    </div>
+                    <div class="text-right">
+                        <div class="font-bold">$${sub.toFixed(2)}</div>
+                        <button onclick="removeItem(${i})" class="text-red-400 text-xs">Remove</button>
+                    </div>
+                </div>
+            </div>
+        </div>`;
+    }).join('');
+    document.getElementById('cartTotal').textContent = `$${total.toFixed(2)}`;
+}
+
+function qty(i, d) { cart[i].qty = Math.max(1, cart[i].qty + d); renderCart(); updateBadge(); }
+function removeItem(i) { cart.splice(i,1); renderCart(); updateBadge(); }
+function checkout() {
+    if(!cart.length) return;
+    alert('✅ Thank you! Demo checkout — in real life this connects to local pickup at PK Smoke Shop in Mesa, AZ.');
+    cart=[]; updateBadge(); toggleCart();
+}
+
+function showModal(id) {
+    const p = products.find(x => x.id === id);
+    document.getElementById('modalBody').innerHTML = `
+        <div><img src="${p.img}" class="w-full rounded-2xl"></div>
+        <div class="space-y-5 flex flex-col justify-between">
+            <div>
+                <div class="text-violet-400 text-xs font-bold uppercase tracking-widest mb-1">${p.cat}</div>
+                <h3 class="brand-font text-3xl font-extrabold mb-1">${p.name}</h3>
+                <div class="text-zinc-400 text-lg mb-4">${p.sub}</div>
+                <div class="text-4xl font-bold">$${p.price}</div>
+            </div>
+            <button onclick="addToCart(${p.id});closeModal()" class="bg-white text-zinc-950 py-5 rounded-xl font-bold text-lg flex items-center justify-center gap-3">
+                ADD TO CART <i class="fa-solid fa-cart-plus"></i>
+            </button>
+        </div>`;
+    document.getElementById('prodModal').classList.remove('hidden');
+}
+
+function closeModal() { document.getElementById('prodModal').classList.add('hidden'); }
+document.getElementById('prodModal').addEventListener('click', e => { if(e.target === document.getElementById('prodModal')) closeModal(); });
+
+function toast(msg) {
+    const t = document.createElement('div');
+    t.className = 'toast bg-zinc-900 border border-violet-500/50 px-6 py-3 rounded-full text-sm font-semibold shadow-xl';
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(() => { t.classList.add('hide'); setTimeout(()=>t.remove(),300); }, 2200);
+}
+
+function scroll2(id) { document.getElementById(id)?.scrollIntoView({behavior:'smooth'}); }
+
+function toggleMobile() {
+    const nav = document.getElementById('mobileNav');
+    nav.classList.toggle('open');
+    document.getElementById('menuIcon').className = nav.classList.contains('open') ? 'fa-solid fa-xmark text-xl' : 'fa-solid fa-bars text-xl';
+}
+
+function enterSite() { document.getElementById('ageGate').style.display='none'; }
+function leaveSite() { window.location.href='https://google.com'; }
+
+document.getElementById('contactForm').addEventListener('submit', e => {
+    e.preventDefault();
+    toast("✅ Message sent! We'll reply soon.");
+    e.target.reset();
+});
+
+window.addEventListener('scroll', () => {
+    document.getElementById('mainNav').classList.toggle('scrolled', window.scrollY > 60);
+});
+
+window.onload = () => { renderProducts(); renderReviews(); };
+</script>
+</body>
+</html>

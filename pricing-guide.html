@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PK Smoke Shop – Website Package</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'DM Sans', sans-serif; background: #09090f; color: #f0f0f8; padding: 48px 24px; min-height: 100vh; }
+
+        .page { max-width: 900px; margin: 0 auto; }
+
+        .header { text-align: center; margin-bottom: 56px; }
+        .header .eyebrow { font-size: 0.7rem; font-weight: 700; letter-spacing: 4px; color: #a855f7; text-transform: uppercase; margin-bottom: 12px; }
+        .header h1 { font-family: 'Bebas Neue', sans-serif; font-size: 3.5rem; letter-spacing: 3px; margin-bottom: 12px; }
+        .header p { color: rgba(255,255,255,0.5); font-size: 1rem; max-width: 520px; margin: 0 auto; line-height: 1.6; }
+
+        .cards { display: flex; justify-content: center; }
+
+        .card {
+            background: rgba(124,58,237,0.08);
+            border: 1px solid rgba(168,85,247,0.4);
+            border-radius: 20px;
+            padding: 40px 32px;
+            max-width: 520px;
+            width: 100%;
+            text-align: left;
+        }
+
+        .tier-badge { font-size: 0.65rem; font-weight: 800; letter-spacing: 3px; text-transform: uppercase; color: #a855f7; margin-bottom: 10px; }
+        .tier-name { font-family: 'Bebas Neue', sans-serif; font-size: 2.2rem; letter-spacing: 2px; }
+
+        .price-block { margin: 20px 0 24px; }
+        .price-once { font-family: 'Bebas Neue', sans-serif; font-size: 4rem; }
+        .price-once sup { font-size: 1.5rem; }
+        .price-label { font-size: 0.75rem; color: rgba(255,255,255,0.4); letter-spacing: 1px; margin-top: 4px; }
+
+        .divider { height: 1px; background: rgba(255,255,255,0.08); margin: 24px 0; }
+
+        .features { list-style: none; }
+        .features li {
+            display: flex;
+            gap: 10px;
+            font-size: 0.95rem;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            color: rgba(255,255,255,0.75);
+        }
+        .features li:last-child { border-bottom: none; }
+
+        .check { color: #4ade80; }
+        .feat-strong { color: #fff; font-weight: 700; }
+        .feat-note { font-size: 0.75rem; color: rgba(255,255,255,0.4); display: block; }
+
+        .cta-btn {
+            margin-top: 28px;
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 700;
+            letter-spacing: 1px;
+            background: linear-gradient(135deg,#7c3aed,#a855f7);
+            color: #fff;
+            cursor: pointer;
+            box-shadow: 0 0 25px rgba(168,85,247,0.35);
+        }
+
+        .notes {
+            margin-top: 50px;
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 16px;
+            padding: 28px;
+        }
+
+        .notes h3 {
+            font-family: 'Bebas Neue', sans-serif;
+            letter-spacing: 2px;
+            margin-bottom: 16px;
+        }
+
+        .notes ul { list-style: none; }
+        .notes li {
+            padding: 8px 0;
+            color: rgba(255,255,255,0.6);
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+
+<div class="page">
+
+    <div class="header">
+        <div class="eyebrow">Website Package</div>
+        <h1>PK SMOKE SHOP</h1>
+        <p>A complete, all-in-one website solution with design, hosting, updates, and support included — no upfront cost.</p>
+    </div>
+
+    <div class="cards">
+        <div class="card">
+            <div class="tier-badge">Standard Plan</div>
+            <div class="tier-name">All-In-One Website</div>
+
+            <div class="price-block">
+                <div class="price-once"><sup>$</sup>325</div>
+                <div class="price-label">PER MONTH</div>
+            </div>
+
+            <div class="divider"></div>
+
+            <ul class="features">
+                <li><span class="check">✓</span><div><span class="feat-strong">Full multi-section website</span><span class="feat-note">Hero, shop, about, deals, reviews, contact</span></div></li>
+                <li><span class="check">✓</span><div><span class="feat-strong">Age verification gate</span></div></li>
+                <li><span class="check">✓</span><div><span class="feat-strong">Live shopping cart</span></div></li>
+                <li><span class="check">✓</span><div><span class="feat-strong">Product modals & popups</span></div></li>
+                <li><span class="check">✓</span><div><span class="feat-strong">Custom smoke animations</span></div></li>
+                <li><span class="check">✓</span><div><span class="feat-strong">Customer reviews section</span></div></li>
+                <li><span class="check">✓</span><div><span class="feat-strong">Contact form</span></div></li>
+                <li><span class="check">✓</span><div><span class="feat-strong">Mobile optimized</span></div></li>
+                <li><span class="check">✓</span><div><span class="feat-strong">Advanced SEO + Google Business</span></div></li>
+                <li><span class="check">✓</span><div><span class="feat-strong">Hosting + SSL included</span></div></li>
+                <li><span class="check">✓</span><div><span class="feat-strong">Ongoing updates & support</span></div></li>
+            </ul>
+
+            <button class="cta-btn">GET STARTED</button>
+        </div>
+    </div>
+
+    <div class="notes">
+        <h3>Notes</h3>
+        <ul>
+            <li>Everything is included in one simple monthly price.</li>
+            <li>No upfront cost. Cancel anytime.</li>
+            <li>Includes hosting, maintenance, and updates.</li>
+            <li>Built specifically for PK Smoke Shop branding and goals.</li>
+        </ul>
+    </div>
+
+</div>
+
+</body>
+</html>
